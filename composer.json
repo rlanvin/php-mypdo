@@ -1,0 +1,14 @@
+{
+    "name": "rlanvin/php-mypdo",
+    "type": "library",
+    "description": "Wrapper for PDO (MySQL) to support auto-reconnect, nested transactions and more.",
+    "keywords": [],
+    "homepage": "https://github.com/rlanvin/php-mypdo",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "classmap": ["src/"]
+    }
+}
