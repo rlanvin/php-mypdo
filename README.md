@@ -7,7 +7,7 @@ MyPDO is a wrapper that adds a few features missing from vanilla PDO:
  - Methods chainability
  - Helpers methods (e.g. `ping()`)
 
-**Important: MyPDO is designed for MySQL.**
+**Important: MyPDO is designed for MySQL only.**
 
 This class will not add higher logic to PDO (such as lazy loading, data mapping, etc.). It is only intended to add low-level features.
 
