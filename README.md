@@ -5,6 +5,7 @@ MyPDO is a wrapper that adds a few features missing from vanilla PDO:
  - Automatic reconnection (no more _2006 MySQL server has gone away_)
  - Nested transactions
  - Methods chainability
+ - Hidden password from the stack trace (in case of error)
  - Helpers methods (e.g. `ping()`)
 
 **Important: MyPDO is designed for MySQL only.**
