@@ -61,12 +61,13 @@ class MyPDO
 
 	/**
 	 * Create a new PDO handler.
+	 * @param $password pass an array to hide the password from the stacktrace
 	 */
 	public function __construct($dsn, $username = '', $password = '', $options = array())
 	{
 		$this->dsn = $dsn;
 		$this->user = $username;
-		$this->pass = $password;
+		$this->pass = is_array($password) ? $password[0] : $password;
 		$this->options = array_merge(array(
 			'autoreconnect' => true,
 		), $options);
@@ -94,7 +95,12 @@ class MyPDO
 	 */
 	public function connect()
 	{
-		$this->pdo = new PDO($this->dsn, $this->user, $this->pass, $this->options);
+		try {
+			$this->pdo = new PDO($this->dsn, $this->user, $this->pass, $this->options);
+		} catch (PDOException $e) {
+			// rethrow the exception to hide the password in the stack trace
+			throw new PDOException($e->getMessage(), $e->getCode());
+		}
 		$this->active_transactions = 0;
 
 		// reset all PDO's attributes.

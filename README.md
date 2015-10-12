@@ -2,14 +2,14 @@
 
 MyPDO is a wrapper that adds a few features missing from vanilla PDO:
  - Explicit disconnection
- - Automatic reconnection (no more _2006 MySQL has gone away_)
+ - Automatic reconnection (no more _2006 MySQL server has gone away_)
  - Nested transactions
  - Methods chainability
  - Helpers methods (e.g. `ping()`)
 
 **Important: MyPDO is designed for MySQL only.**
 
-This class will not add higher logic to PDO (such as lazy loading, data mapping, etc.). It is only intended to add low-level features.
+This class will not add higher logic to PDO (such as data mapping, etc.). It is only intended to add low-level features.
 
 [![Build Status](https://travis-ci.org/rlanvin/php-mypdo.svg?branch=master)](https://travis-ci.org/rlanvin/php-mypdo)
 
