@@ -9,7 +9,7 @@ class MyPDOTest extends PHPUnit_Framework_TestCase
 	{
 		global $config;
 
-		$dbh = new MyPDO($config['dsn'], $config['user'], $config['password'], array(
+		$dbh = new MyPDO($config['dsn'], $config['user'], $config['password'], array(), array(
 			'autoreconnect' => false
 		));
 		$dbh->exec('SET session wait_timeout = 1');

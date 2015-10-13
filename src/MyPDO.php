@@ -41,7 +41,14 @@ class MyPDO
 	 *            reason is different than the "attributes").
 	 *            Also used for class-specific settings.
 	 */
-	protected $options = array();
+	protected $pdo_options = array();
+
+	/**
+	 * @var array Stores the class options
+	 */
+	protected $options = array(
+		'autoreconnect' => true
+	);
 
 	/**
 	 * @var array Stores the current attributes (whiwh are for some reason
@@ -63,14 +70,13 @@ class MyPDO
 	 * Create a new PDO handler.
 	 * @param $password pass an array to hide the password from the stacktrace
 	 */
-	public function __construct($dsn, $username = '', $password = '', $options = array())
+	public function __construct($dsn, $username = '', $password = '', array $pdo_options = array(), array $options = array())
 	{
 		$this->dsn = $dsn;
 		$this->user = $username;
 		$this->pass = is_array($password) ? $password[0] : $password;
-		$this->options = array_merge(array(
-			'autoreconnect' => true,
-		), $options);
+		$this->pdo_options = $pdo_options;
+		$this->options = array_merge($this->options, $options);
 
 		$this->connect();
 
@@ -96,7 +102,7 @@ class MyPDO
 	public function connect()
 	{
 		try {
-			$this->pdo = new PDO($this->dsn, $this->user, $this->pass, $this->options);
+			$this->pdo = new PDO($this->dsn, $this->user, $this->pass, $this->pdo_options);
 		} catch (PDOException $e) {
 			// rethrow the exception to hide the password in the stack trace
 			throw new PDOException($e->getMessage(), $e->getCode());
