@@ -182,7 +182,6 @@ class MyPDO
 	 */
 	public function ping()
 	{
-		echo __METHOD__,"\n";
 		if ( $this->pdo === null ) {
 			return false;
 		}
