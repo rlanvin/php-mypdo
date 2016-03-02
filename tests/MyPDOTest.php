@@ -30,4 +30,13 @@ class MyPDOTest extends PHPUnit_Framework_TestCase
 
 		$result = $dbh->query('SELECT 1');
 	}
+
+	/**
+	 * @expectedException BadMethodCallException
+	 */
+	public function testBadMethodCall()
+	{
+		$dbh = new MyPDO('sqlite::memory:');
+		$dbh->foobar();
+	}
 }

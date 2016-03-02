@@ -61,7 +61,7 @@ class MyPDOStatement
 	public function __call($function, array $args = array()) 
 	{
 		if ( null === $this->statement ) {
-			throw new RuntimeException('No statement');
+			throw new \RuntimeException('No statement');
 		}
 
 		return call_user_func_array(array($this->pdo_statement, $function), $args);
@@ -79,7 +79,7 @@ class MyPDOStatement
 		do {
 			try {
 				return $this->pdo_statement->execute($args);
-			} catch ( PDOException $e ) {
+			} catch ( \PDOException $e ) {
 				if (strpos($e->getMessage(), '2006 MySQL') !== false) {
 					// we do not reconnect here. Instead, we need to destroy the
 					// prepared statement object, and create a new one.
@@ -92,6 +92,6 @@ class MyPDOStatement
 			$attempts += 1;
 		} while ($attempts < 3);
 
-		throw new RuntimeException('Max number of retry exceeded');
+		throw new \RuntimeException('Max number of retry exceeded');
 	}
 }

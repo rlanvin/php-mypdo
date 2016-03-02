@@ -105,7 +105,7 @@ class MyPDO
 			$this->pdo = new PDO($this->dsn, $this->user, $this->pass, $this->pdo_options);
 		} catch (PDOException $e) {
 			// rethrow the exception to hide the password in the stack trace
-			throw new PDOException($e->getMessage(), $e->getCode());
+			throw new \PDOException($e->getMessage(), $e->getCode());
 		}
 		$this->active_transactions = 0;
 
@@ -133,7 +133,7 @@ class MyPDO
 	public function autoreconnect()
 	{
 		if ( $this->active_transactions > 0 ) {
-			throw new RuntimeException('2006 MySQL has gone away during an active transaction.');
+			throw new \RuntimeException('2006 MySQL has gone away during an active transaction.');
 		}
 
 		$this->disconnect();
@@ -189,7 +189,7 @@ class MyPDO
 		try {
 			$this->pdo->query('SELECT 1');
 			return true;
-		} catch ( PDOException $e ) {
+		} catch ( \PDOException $e ) {
 			return false;
 		}
 	}
@@ -206,32 +206,39 @@ class MyPDO
 
 		try {
 			return $this->pdo->query('SELECT CONNECTION_ID()')->fetch(PDO::FETCH_COLUMN);
-		} catch ( PDOException $e ) {
+		} catch ( \PDOException $e ) {
 			return null;
 		}
 	}
+
+///////////////////////////////////////////////////////////////////////////////
+// Disconnect/reconnect
 
 	/**
 	 * Wrap every function call to catch timeout and attempt to reconnect.
 	 *
 	 * This function will NOT auto-reconnect if transactions were active.
 	 */
-	public function __call($function, array $args = array()) 
+	public function __call($method, array $args = array()) 
 	{
 		if ( null === $this->pdo ) {
-			throw new RuntimeException('Not connected to DB');
+			throw new \RuntimeException('Not connected');
+		}
+		if ( ! method_exists($this->pdo, $method) ) {
+			throw new \BadMethodCallException("$method does not exists");
 		}
 
 		// save the current database for later reconnection
-		if ( ($function == 'exec' || $function == 'query') && substr($args[0],0,4) == 'USE ') {
+		if ( ($method == 'exec' || $method == 'query') && substr($args[0],0,4) == 'USE ') {
 			$this->last_use = $args[0];
 		}
 
 		$attempts = 0;
 		do {
 			try {
-				return @call_user_func_array(array($this->pdo, $function), $args);
-			} catch ( PDOException $e ) {
+				// suppress output to avoid stupid warning "Error while sending QUERY packet."
+				return @call_user_func_array(array($this->pdo, $method), $args);
+			} catch ( \PDOException $e ) {
 				if ( $this->options['autoreconnect'] && strpos($e->getMessage(), '2006 MySQL') !== false ) {
 					$this->autoreconnect();
 				}
@@ -242,13 +249,11 @@ class MyPDO
 			$attempts += 1;
 		} while ($attempts < 3);
 
-		throw new RuntimeException('Max number of retry exceeded');
+		throw new \RuntimeException('Max number of retry exceeded');
 	}
 
-/**
- * @name Nested transaction support
- */
-//@{
+///////////////////////////////////////////////////////////////////////////////
+// Nested transactions
 
 	/**
 	 * Return the number of active transactions
@@ -291,7 +296,7 @@ class MyPDO
 	public function commit()
 	{
 		if ( $this->active_transactions == 0 ) {
-			throw new RuntimeException('Commit failed, no active transaction.');
+			throw new \RuntimeException('Commit failed, no active transaction.');
 		}
 
 		$this->active_transactions -= 1;
@@ -320,7 +325,7 @@ class MyPDO
 	public function rollback()
 	{
 		if ( $this->active_transactions == 0 ) {
-			throw new RuntimeException('Rollback failed, no active transaction.');
+			throw new \RuntimeException('Rollback failed, no active transaction.');
 		}
 
 		$this->active_transactions -= 1;
@@ -333,5 +338,4 @@ class MyPDO
 			return true;
 		}
 	}
-//@}
 }
